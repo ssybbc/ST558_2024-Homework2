@@ -1,0 +1,134 @@
+---
+title: "homework 2-programming in Base R" 
+format: html 
+editor: visual 
+---
+
+# -Basic *vector* practice
+
+First need to assign observation values to each of observation.
+
+```{r}
+pretreat <- c (120, 151, 125, 126, 115, 132, 132, 129, 134, 139, 127, 122, 127, 135, 133, 128, 147, 138, 140, 132)
+posttreat<- c (127, 145, 135, 122, 115, 122, 123, 126, 126, 129, 132, 146, 120, 114, 121, 120, 128, 120, 133, 115) 
+```
+
+Then name each element in the vector.
+
+```{r}
+patient <- paste ("Subject", 1:20, sep = "_") 
+attributes(pretreat) $ names <- patient 
+attributes(posttreat) $ names <- patient
+```
+
+\
+Then we are interested to know the change in blood pressure for each patient.
+
+```{r}
+changetreat <- posttreat - pretreat 
+changetreat
+```
+
+... and the average change in blood pressure is...
+
+```{r}
+mean (changetreat)
+```
+
+There are several patients experiencing a decrease in blood pressure after treatment, who are:
+
+```{r}
+negtreat <- which (changetreat <0)
+negtreat
+```
+
+Now we subset patients who blood pressure changed positively after treatment. Here we used a Boolean expression to subset the vector changetreat.
+
+```{r}
+postreat <- changetreat [changetreat > 0] 
+postreat
+```
+
+What is the average decrease in blood pressure for those experiencing a decrease in blood pressure?
+
+```{r}
+negtreat <- changetreat [changetreat <= 0] 
+avgdectreat <- mean (negtreat) 
+avgdectreat
+```
+
+# -*Data Frame* practice
+
+First let's create a data frame containing the four different vectors that we have established before, and return only patients with a negative change in blood pressure.
+
+```{r}
+patient_df <- data.frame(patient, pretreat, posttreat, changetreat)
+patient_dec <- patient_df [patient_df$changetreat <0,] 
+patient_dec
+```
+
+Now add another column whose value is TRUE when the blood pressure is less than 120 after treatment, and FALSE otherwise. Check the new data frame.
+
+```{r}
+patient_df$iftreat <- patient_df$posttreat < 120 
+head (patient_df,3)
+```
+
+Now use the kable function to printout the final document
+
+```{r}
+knitr::kable(patient_df)
+```
+
+# - Basic List practice
+
+Create a new data frame using the placebo data.
+
+```{r}
+pretreat2 <- c(138, 135, 147, 117, 152, 134, 114, 121, 131, 130) 
+posttreat2 <- c(105, 136, 123, 130, 134, 143, 135, 139, 120, 124) 
+patient2 <- paste ("Subject2", 1:10, sep = "_") 
+changetreat2 <- posttreat2 - pretreat2 
+iftreat2 <- posttreat2 < 120 
+patient_df2 <- data.frame(patient2, pretreat2, posttreat2, changetreat2, iftreat2)  
+head (patient_df2,3)
+```
+
+Now create the list:
+
+```{r}
+patient_list <- list (patient_df, patient_df2) 
+patient_list
+```
+
+Try practice accessing the first element of the list
+
+```{r}
+patient_list [1]
+```
+
+```{r}
+patient_list [[1]]
+```
+
+The difference between the two methods of accessing elements in the list could be found out by
+
+```{r}
+str (patient_list[1]) 
+str (patient_list[[1]])
+```
+
+The first method of referencing generates a list of 1 elements, while the second method generates the data frame itself.
+
+We could also name the elements in the list and reference the element using its name
+
+```{r}
+attributes (patient_list) $ names <- c ("treatment", "placebo")
+patient_list$treatment
+```
+
+Practice accessing one column in a dataframe from a list
+
+```{r}
+patient_list[[1]]$pretreat
+```
